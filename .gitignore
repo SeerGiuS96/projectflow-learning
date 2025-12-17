@@ -1,0 +1,13 @@
+﻿# .NET
+bin/
+obj/
+.vs/
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+
+# OS
+Thumbs.db
+.DS_Store
