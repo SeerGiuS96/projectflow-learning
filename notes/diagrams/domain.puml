@@ -1,0 +1,47 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package "ProjectFlow.Domain" {
+
+  package "Entities" {
+    class Project {
+      +Guid Id
+      +string Name
+      +string? Description
+      +DateTime CreatedAt
+    }
+
+    class WorkItem {
+      +Guid Id
+      +Guid ProjectId
+      +string Title
+      +string? Description
+      +WorkItemStatus Status
+      +WorkItemPriority Priority
+      +DateTime CreatedAt
+      +DateTime? CompletedAt
+      --
+      +MarkAsDone() : void
+      +MoveTo(status: WorkItemStatus) : void
+    }
+  }
+
+  package "Enums" {
+    enum WorkItemStatus {
+      Todo
+      Doing
+      Done
+    }
+
+    enum WorkItemPriority {
+      Low
+      Medium
+      High
+    }
+  }
+
+  Project "1" o-- "many" WorkItem : contains
+  WorkItem --> WorkItemStatus
+  WorkItem --> WorkItemPriority
+}
+@enduml

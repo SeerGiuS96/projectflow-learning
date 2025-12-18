@@ -1,0 +1,32 @@
+@startuml
+autonumber
+skinparam shadowing false
+
+actor Client
+participant "API (Controller/Endpoint)" as Api
+participant "Application (Use Case)" as App
+participant "Domain (Entities/Rules)" as Domain
+participant "Infrastructure (Repo/DbContext)" as Infra
+database "DB" as DB
+participant "Exception Middleware" as Mw
+
+== Success path ==
+Client -> Api: HTTP request (JSON)
+Api -> App: Map + call use case
+App -> Domain: Create/modify entity\n(enforce invariants)
+App -> Infra: Save / Query (via interface)
+Infra -> DB: SQL
+DB --> Infra: result
+Infra --> App: entity/data
+App --> Api: DTO/result
+Api --> Client: 200/201 + JSON
+
+== Error path ==
+Client -> Api: HTTP request (invalid)
+Api -> App: call use case
+App -> Domain: Create/modify entity
+Domain -> Mw: throws DomainException (invariant)
+Mw -> Api: convert to ProblemDetails
+Api --> Client: 400/409 + ProblemDetails JSON
+
+@enduml

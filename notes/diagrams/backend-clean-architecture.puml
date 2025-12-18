@@ -1,0 +1,59 @@
+@startuml
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+package "Backend (.NET 8)" {
+
+  package "Api (ProjectFlow.Api)" {
+    [Controllers / Endpoints]
+    [Auth (JWT)]
+    [Middleware\n(Exception handling, logging)]
+    [DI Composition Root\n(Program.cs)]
+    [Request/Response Models\n(API contracts)]
+  }
+
+  package "Application (ProjectFlow.Application)" {
+    [Use Cases\n(Commands/Queries)]
+    [Handlers\n(Mediator optional)]
+    [DTOs]
+    [Validation\n(FluentValidation optional)]
+    [Interfaces\n(IProjectRepository, IClock, ...)]
+    [Mapping\n(domain <-> dto)]
+  }
+
+  package "Domain (ProjectFlow.Domain)" {
+    [Entities\n(Project, WorkItem)]
+    [Value Objects\n(optional)]
+    [Enums\n(Status, Priority)]
+    [Domain Rules\n(invariants)]
+    [Domain Exceptions\n(optional)]
+  }
+
+  package "Infrastructure (ProjectFlow.Infrastructure)" {
+    [EF Core DbContext]
+    [Entity Configurations\n(Fluent API)]
+    [Repository Implementations]
+    [Migrations]
+    [External Services\n(email, file, etc.)]
+  }
+
+  package "Tests" {
+    [Domain.Tests\n(unit)]
+    [Api.Tests\n(integration)]
+  }
+}
+
+[Controllers / Endpoints] --> [Use Cases\n(Commands/Queries)]
+[Middleware\n(Exception handling, logging)] ..> [Controllers / Endpoints]
+[Use Cases\n(Commands/Queries)] --> [Entities\n(Project, WorkItem)]
+[Use Cases\n(Commands/Queries)] ..> [Interfaces\n(IProjectRepository, IClock, ...)]
+[Repository Implementations] ..> [Interfaces\n(IProjectRepository, IClock, ...)]
+[Repository Implementations] --> [EF Core DbContext]
+[Entity Configurations\n(Fluent API)] ..> [EF Core DbContext]
+[Migrations] ..> [EF Core DbContext]
+
+[Domain.Tests\n(unit)] --> [Entities\n(Project, WorkItem)]
+[Api.Tests\n(integration)] --> [Controllers / Endpoints]
+
+@enduml
