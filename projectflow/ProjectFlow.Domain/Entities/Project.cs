@@ -9,13 +9,23 @@ public class Project
     public string? Description { get; private set; }
     public DateTime CreatedAt { get; private set; }
 
-    public Project(Guid id, string name, string? description = null, DateTime? createdAt = null)
+    private Project() //
     {
-        Id = id == Guid.Empty ? throw new ArgumentException("Project id cannot be empty.", nameof(id)) : id;
-        Name = ValidateName(name);
-        Description = description;
-        CreatedAt = createdAt ?? DateTime.UtcNow;
+        Name = string.Empty;
     }
+
+
+    public Project(Guid id, string name, string? description = null)
+    {
+        Id = id == Guid.Empty
+            ? throw new ArgumentException("Project id cannot be empty.", nameof(id))
+            : id;
+
+        Name = ValidateName(name);
+        Description = description?.Trim();
+        CreatedAt = DateTime.UtcNow;
+    }
+
 
     public void Rename(string name)
     {
