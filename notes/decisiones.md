@@ -20,6 +20,6 @@
 - Dominio: invariantes siempre, incluso si se salta el resto (p.ej. Name no vacio, Guid no vacio).
 
 ## Validation strategy
-- Domain: invariants (must always hold).
+- Domain: business invariants only.
 - Application/API: input validation.
 - Infrastructure: database constraints via EF Fluent API.
