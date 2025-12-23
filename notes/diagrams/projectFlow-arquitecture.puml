@@ -1,0 +1,48 @@
+@startuml
+skinparam packageStyle rectangle
+
+package "ProjectFlow (repo)" {
+  package "notes" {
+    [roadmap.md]
+    [learnings.md]
+    [decisiones.md]
+    [guidelines.md]
+    folder "diagrams"
+  }
+
+  package "projectflow (solution)" {
+    package "ProjectFlow.Api" {
+      [Program.cs]
+      [appsettings*.json]
+      note right: "HTTP entrypoint + DI registration + middleware"
+    }
+
+    package "ProjectFlow.Application" {
+      note right: "Use cases live here (later)\nValidation (later)\nOrchestration"
+    }
+
+    package "ProjectFlow.Domain" {
+      folder "Entities"
+      folder "Enums"
+      note right: "Business rules + invariants\nNo EF, no HTTP"
+    }
+
+    package "ProjectFlow.Infrastructure" {
+      folder "Persistence (DbContext)"
+      folder "Configurations (Fluent API)"
+      folder "Migrations"
+      note right: "EF Core + database concerns"
+    }
+
+    package "ProjectFlow.Api.Tests" {
+      note right: "Tests (later: unit+integration)"
+    }
+  }
+}
+
+ProjectFlow.Api --> ProjectFlow.Application
+ProjectFlow.Application --> ProjectFlow.Domain
+ProjectFlow.Infrastructure --> ProjectFlow.Domain
+ProjectFlow.Api --> ProjectFlow.Infrastructure
+
+@enduml

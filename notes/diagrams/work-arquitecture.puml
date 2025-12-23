@@ -1,0 +1,77 @@
+@startuml
+skinparam packageStyle rectangle
+
+package "Solution Items" {
+  [Directory.Build.Targets]
+}
+
+package "Angular" {
+  package "Client" {
+    folder "Properties"
+    folder "ClientApp"
+    folder "Pages"
+  }
+  [Program.cs]
+  [Startup.cs]
+  [appsettings.json]
+}
+
+package ".NET Core" {
+  package "WebApi" {
+    folder "Properties"
+    folder "Configuration"
+    folder "Controllers"
+    [Program.cs]
+    [Startup.cs]
+    [appsettings.json]
+    [libman.json]
+  }
+
+  package "IoC" {
+    [DependencyInjection.cs]
+  }
+
+  package "BL (Business Logic)" {
+    folder "Helpers"
+    folder "Mapping"
+    folder "Services"
+    folder "Validation"
+  }
+
+  package "DTOs" {
+    [BaseDto]
+    [All DTO classes...]
+  }
+
+  package "DataAccess" {
+    folder "Constants"
+    folder "Context"
+    folder "Entities"
+    folder "Enums"
+    folder "Migrations"
+    folder "Repositories"
+  }
+
+  package "Security" {
+    package "Security.IdentityClient" {
+      [Config to access security tables]
+    }
+  }
+
+  package "Tests" {
+    [BL.Tests]
+    note right: "Intention: add more unit tests per library\nand integration tests for backend"
+  }
+}
+
+' Typical dependency direction (inferred)
+"WebApi" --> "IoC"
+"IoC" --> "BL (Business Logic)"
+"BL (Business Logic)" --> "DataAccess"
+"BL (Business Logic)" --> "DTOs"
+"DataAccess" --> "DTOs"
+"WebApi" --> "DTOs"
+"WebApi" --> "Security.IdentityClient"
+"BL.Tests" --> "BL (Business Logic)"
+
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+title Work solution - typical request flow
+
+actor Client
+Client -> WebApi: HTTP Request
+WebApi -> BL: Service method
+BL -> DataAccess: Repository/Context
+DataAccess -> DB: SQL
+DB --> DataAccess
+DataAccess --> BL
+BL --> WebApi: DTO/result
+WebApi --> Client: HTTP Response
+
+@enduml

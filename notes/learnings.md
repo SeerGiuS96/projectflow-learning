@@ -102,4 +102,64 @@ A common clean approach:
 - avoid passing system fields like CreatedAt from outside (use UtcNow or an IClock later)
 
 
+### Data persistence
+
+Data persistence means that application data survives application restarts.
+Without persistence, all data would be lost when the process stops.
+
+In this project, persistence is handled by:
+- Infrastructure layer
+- EF Core (DbContext, mappings, migrations)
+- Database (SQL Server LocalDB)
+
+Persistence is responsible for how and where data is stored,
+not for business rules or validation.
+
+Separating persistence from the domain allows changing the storage
+technology without impacting business logic.
+
+
+## 23/12/2025
+
+### Data persistence
+
+Persistence means storing data outside the application process so it survives restarts.
+In this project persistence lives in the Infrastructure layer using EF Core and a database.
+It defines how and where data is stored, not business rules.
+
+### Middleware
+
+In ASP.NET Core, middleware is code executed during the HTTP request/response pipeline
+(e.g. authentication, logging).
+
+In infrastructure contexts, middleware can also mean network components
+(API gateways, proxies) that connect different networks.
+Same word, different level.
+
+### Validation types and vocabulary
+
+**Domain**: the business/problem space (projects, work items, invoices...). Not technology.
+
+**Business rule**: a rule that describes how the domain works.
+
+**Domain invariant**: a business rule that must always hold. If broken, the model is invalid.
+Examples:
+- Project name cannot be empty.
+- WorkItem in Done must have CompletedAt.
+- Only valid statuses are allowed.
+
+**Input validation (API/Application)**: validates incoming requests for UX and early feedback (400 errors).
+Examples:
+- Title required, max length 200
+- Description max length 1000
+
+**Persistence constraints (Infrastructure/DB)**: storage-level rules enforced by the database schema.
+Examples:
+- HasMaxLength(200), indexes, unique constraints, enum conversions.
+
+**Policy (variable business rule)**: rules that can change by country/date/customer/config (not invariants).
+Example: VAT/IVA rate calculation should live in Application as a policy/strategy, not hardcoded in domain entities.
+
+**Infrastructure rules**: rate limiting, auth, CORS, logging; not domain rules.
+
 

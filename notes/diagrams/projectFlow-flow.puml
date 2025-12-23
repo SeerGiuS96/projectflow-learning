@@ -1,0 +1,15 @@
+@startuml
+title ProjectFlow - typical request flow (target)
+
+actor Client
+Client -> Api: HTTP Request
+Api -> Application: Use case (handler/service)
+Application -> Domain: enforce invariants\n(state changes)
+Application -> Infrastructure: persistence gateway (EF/repo)
+Infrastructure -> DB: SQL
+DB --> Infrastructure
+Infrastructure --> Application
+Application --> Api: result/response model
+Api --> Client: HTTP Response
+
+@enduml

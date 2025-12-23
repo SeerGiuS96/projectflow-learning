@@ -46,7 +46,7 @@ Out of scope for now:
 # Roadmap (Week 1)
 
 - [x] Day 1: Backend foundation (.NET 8) — solution structure + domain baseline
-- [ ] Day 2: Persistence — EF Core + migrations
+- [x] Day 2: Persistence — EF Core + migrations
 - [ ] Day 3: Auth — JWT + testing baseline
 - [ ] Day 4: Angular foundation — routing + services
 - [ ] Day 5: Forms + API integration
