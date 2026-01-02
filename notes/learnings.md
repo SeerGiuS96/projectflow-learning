@@ -171,3 +171,152 @@ Example: VAT/IVA rate calculation should live in Application as a policy/strateg
 - El proveedor se decide en API por config ("Database:Provider"), no en Infrastructure.
 - Mantener dos connection strings (Sqlite/SqlServer) facilita el cambio sin tocar codigo.
 
+## 2026-01-02
+
+### Domain rules vs validation vs policy (examples)
+
+A rule can look "businessy" but still NOT be a domain invariant.
+
+**Domain invariant (must always hold, model invalid otherwise)**
+- WorkItem.Status = Done => CompletedAt != null
+  - If broken, the entity state is invalid, regardless of UI/DB.
+  - Enforced in Domain entity.
+
+**Input validation (UX / request contract)**
+- CreateWorkItem.Title required, max length 200
+  - This is often a UI/API constraint: can change without changing the business meaning.
+  - Enforced in Application (FluentValidation) so clients get a 400.
+
+**Persistence constraint (storage level)**
+- DB column length, indexes, unique keys
+  - Prevents bad storage, not the source of truth for business rules.
+  - Enforced in Infrastructure (EF Fluent API).
+
+**Policy / variable business rule (changes by config/country/customer/date)**
+- VAT/IVA rate, allowed priorities per plan, max items per project depending on subscription
+  - Business-related but not invariant: it can change without the entity becoming "invalid".
+  - Implement as a policy/strategy in Application (or Domain Service) and inject it.
+
+Key idea:
+- "Max length" is usually NOT a domain invariant unless the domain meaning requires it forever.
+  Example: if external standard requires Project.Name <= 50 always, then it might be invariant.
+  Otherwise treat it as input validation + DB constraint.
+
+### Circular references in DTOs (and how to avoid them)
+
+Circular references usually happen when DTOs mirror the entity graph (bidirectional navigation):
+- ProjectDto has WorkItems[]
+- WorkItemDto has ProjectDto
+=> serialization loops (Project -> WorkItems -> Project -> ...)
+
+Avoid by design:
+- DTOs are for a specific request/response, not for mirroring the domain model.
+- Prefer "shape per endpoint" (tailored DTOs), not "one DTO to rule them all".
+
+Patterns:
+1) Use IDs instead of nested objects for back-references:
+   - WorkItemResponse: { id, projectId, title, status, ... }
+2) Use "summary" DTOs for nesting:
+   - ProjectResponse: { id, name, workItems: [ { id, title, status } ] }
+3) Never include full parent inside child when parent already contains children.
+
+Tools / checks:
+- Spot cycles by inspecting DTO graph: parent -> child -> parent properties.
+- System.Text.Json: cycles can be detected/handled, but the correct fix is DTO design (avoid cycles).
+
+### Métodos de intención en el dominio (forzar invariantes)
+
+Cuando una transición de estado tiene reglas de dominio, **no debe permitirse mediante setters públicos**.
+El dominio debe obligar a pasar por un método que represente la intención del cambio.
+
+Ejemplo:
+- Un WorkItem solo puede pasar a Done si se establece CompletedAt.
+
+Diseño correcto:
+- Status y CompletedAt tienen setters privados.
+- El único modo de finalizar un WorkItem es usando un método de dominio.
+
+```csharp
+public sealed class WorkItem
+{
+    public WorkItemStatus Status { get; private set; }
+    public DateTime? CompletedAt { get; private set; }
+
+    public void MarkAsDone(DateTime completedAt)
+    {
+        Status = WorkItemStatus.Done;
+        CompletedAt = completedAt;
+    }
+}
+```
+
+Regla práctica:
+- Si una acción tiene reglas → método de dominio.
+- Si es solo una asignación sin reglas → setter puede ser suficiente.
+
+Esto garantiza que **no puedan existir estados inválidos** dentro del modelo de dominio.
+
+---
+
+### DTOs y referencias circulares: explicación definitiva
+
+Las referencias circulares **NO dependen del número de DTOs**,
+sino de la forma del grafo que construyen.
+
+Un ciclo aparece cuando:
+- Un DTO A contiene a B
+- y B contiene de vuelta a A (directa o indirectamente)
+
+Ejemplo con ciclo (incorrecto):
+- ProjectResponse contiene WorkItemResponse[]
+- WorkItemResponse contiene ProjectResponse  
+=> Project → WorkItems → Project → ...
+
+Ejemplo SIN ciclo (correcto):
+- ProjectResponse contiene WorkItemSummaryResponse[]
+- WorkItemSummaryResponse **NO** contiene ProjectResponse
+
+```csharp
+public sealed class ProjectResponse
+{
+    public Guid Id { get; init; }
+    public string Name { get; init; } = string.Empty;
+    public List<WorkItemSummaryResponse> WorkItems { get; init; } = new();
+}
+
+public sealed class WorkItemSummaryResponse
+{
+    public Guid Id { get; init; }
+    public string Title { get; init; } = string.Empty;
+    public string Status { get; init; } = string.Empty;
+}
+```
+
+Aquí:
+- El padre contiene a los hijos
+- Los hijos NO contienen al padre
+- El grafo es un árbol → no hay ciclo
+
+Si un endpoint necesita devolver un WorkItem con información del Project,
+se usa un DTO distinto con un ProjectSummary (sin hijos):
+
+```csharp
+public sealed class ProjectSummaryResponse
+{
+    public Guid Id { get; init; }
+    public string Name { get; init; } = string.Empty;
+}
+
+public sealed class WorkItemDetailsResponse
+{
+    public Guid Id { get; init; }
+    public string Title { get; init; } = string.Empty;
+    public ProjectSummaryResponse Project { get; init; } = new();
+}
+```
+
+Regla definitiva:
+- Un DTO representa una **RESPUESTA**, no el modelo de dominio.
+- El grafo de DTOs debe ser **acíclico** (árbol o DAG).
+- Nunca incluir el padre completo dentro del hijo si el padre ya contiene al hijo.
+
