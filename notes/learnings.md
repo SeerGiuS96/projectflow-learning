@@ -319,4 +319,3 @@ Regla definitiva:
 - Un DTO representa una **RESPUESTA**, no el modelo de dominio.
 - El grafo de DTOs debe ser **acíclico** (árbol o DAG).
 - Nunca incluir el padre completo dentro del hijo si el padre ya contiene al hijo.
-
