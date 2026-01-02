@@ -1,20 +1,19 @@
-using Microsoft.EntityFrameworkCore;
-using ProjectFlow.Infrastructure.Persistence;
+using ProjectFlow.Api.Auth;
+using ProjectFlow.Api.Extensions;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddProjectFlowSwagger();
+builder.Services.AddProjectFlowDatabase(builder.Configuration);
+builder.Services.AddProjectFlowAuth(builder.Configuration);
 
-builder.Services.AddDbContext<ProjectFlowDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+WebApplication app = builder.Build();
 
-var app = builder.Build();
+app.UseProjectFlowSwagger();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapAuthEndpoints();
 
 app.Run();
