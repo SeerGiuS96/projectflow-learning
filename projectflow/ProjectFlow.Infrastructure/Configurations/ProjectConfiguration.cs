@@ -3,28 +3,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProjectFlow.Domain.Entities;
 
-namespace ProjectFlow.Infrastructure.Configurations;
+namespace ProjectFlow.Infrastructure.Persistence.Configurations;
 
-public class ProjectConfiguration : IEntityTypeConfiguration<Project>
+public sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
 {
     public void Configure(EntityTypeBuilder<Project> builder)
     {
-        builder.ToTable("Projects"); // define explicitamente el nombre de la tabla en la base de datos. Si no pusiera esto, EF Core usa convenciones entonces pluralizaria o usaria el nombre de la clase. ej Project -> Projects, segun el provider/config.
+        builder.HasKey(project => project.Id);
 
-        builder // ID
-            .HasKey(b => b.Id); // no hace falta el IsRequired ya que con el HasKey una PK nunca vendra vacia
-
-        builder // NAME
-            .Property(b => b.Name)
+        builder.Property(project => project.Name)
             .IsRequired()
-            .HasMaxLength(100);
+            .HasMaxLength(200);
 
-        builder // DESCRIPTION
-            .Property(b => b.Description)
-            .HasMaxLength(500);
+        builder.Property(project => project.Description)
+            .HasMaxLength(1000);
 
-        builder // CREATEDAT
-            .Property(b => b.CreatedAt)
+        builder.Property(project => project.CreatedAt)
             .IsRequired();
     }
 }

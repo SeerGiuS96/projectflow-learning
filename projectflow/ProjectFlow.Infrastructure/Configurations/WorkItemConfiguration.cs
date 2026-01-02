@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProjectFlow.Domain.Entities;
 
-namespace ProjectFlow.Infrastructure.Configurations;
+namespace ProjectFlow.Infrastructure.Persistence.Configurations;
 
 public class WorkItemConfiguration : IEntityTypeConfiguration<WorkItem>
 {

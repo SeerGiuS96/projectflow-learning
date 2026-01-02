@@ -3,6 +3,11 @@ bin/
 obj/
 .vs/
 
+# SQLite
+*.db
+*.db-wal
+*.db-shm
+
 # Node / Angular
 node_modules/
 dist/

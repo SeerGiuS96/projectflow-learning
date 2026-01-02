@@ -162,4 +162,12 @@ Example: VAT/IVA rate calculation should live in Application as a policy/strateg
 
 **Infrastructure rules**: rate limiting, auth, CORS, logging; not domain rules.
 
+## 2025-12-24
+
+### EF Core provider switch
+
+- LocalDB no arrancaba; usar SQLite desbloquea el dev sin tocar Domain/Application.
+- Las migraciones son especificas del proveedor: se regeneraron para SQLite.
+- El proveedor se decide en API por config ("Database:Provider"), no en Infrastructure.
+- Mantener dos connection strings (Sqlite/SqlServer) facilita el cambio sin tocar codigo.
 

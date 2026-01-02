@@ -35,4 +35,23 @@ This is not a tutorial project and avoids "hello world" examples.
 - Theory only when it supports practice.
 
 ## How to run (backend)
-(Added when API is implemented.)
+### Database provider
+The API selects the EF Core provider via configuration:
+- `Database:Provider`: `Sqlite` or `SqlServer`
+- Connection strings:
+  - `ProjectFlowDbSqlite`
+  - `ProjectFlowDbSqlServer`
+
+SQLite is the default for local dev. The database is a local file (e.g. `projectflow.dev.db`)
+and is ignored by git.
+
+### Migrations
+From `projectflow/`:
+```powershell
+dotnet ef database update --project ProjectFlow.Infrastructure --startup-project ProjectFlow.Api
+```
+
+### Run
+```powershell
+dotnet run --project ProjectFlow.Api
+```

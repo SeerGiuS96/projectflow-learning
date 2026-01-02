@@ -11,12 +11,12 @@ public sealed class ProjectFlowDbContext : DbContext
     }
 
     public DbSet<Project> Projects => Set<Project>();
+
     public DbSet<WorkItem> WorkItems => Set<WorkItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
-        
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProjectFlowDbContext).Assembly);
+        base.OnModelCreating(modelBuilder);
     }
 }
