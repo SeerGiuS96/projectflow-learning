@@ -26,6 +26,12 @@ public class Project
         CreatedAt = DateTime.UtcNow;
     }
 
+    public static Project Create(string name, string? description = null)
+    {
+        return new Project(Guid.NewGuid(), name, description);
+    }
+
+
 
     public void Rename(string name)
     {

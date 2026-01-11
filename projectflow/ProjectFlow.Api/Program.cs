@@ -7,6 +7,10 @@ builder.Services.AddProjectFlowSwagger();
 builder.Services.AddProjectFlowDatabase(builder.Configuration);
 builder.Services.AddProjectFlowAuth(builder.Configuration);
 
+builder.Services.AddProjectFlowApplication();
+builder.Services.AddProjectFlowInfrastructure();
+
+
 WebApplication app = builder.Build();
 
 app.UseProjectFlowSwagger();
