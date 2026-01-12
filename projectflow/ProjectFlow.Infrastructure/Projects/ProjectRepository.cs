@@ -1,4 +1,5 @@
-using ProjectFlow.Application.Projects;
+using Microsoft.EntityFrameworkCore;
+using ProjectFlow.Application.Projects.Ports;
 using ProjectFlow.Domain.Entities;
 using ProjectFlow.Infrastructure.Persistence;
 
@@ -17,5 +18,15 @@ public sealed class ProjectRepository : IProjectRepository
     {
         await _dbContext.Projects.AddAsync(project, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Project>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        List<Project> projects = await _dbContext.Projects
+            .AsNoTracking()
+            .OrderByDescending(project => project.CreatedAt)
+            .ToListAsync(cancellationToken);
+
+        return projects;
     }
 }

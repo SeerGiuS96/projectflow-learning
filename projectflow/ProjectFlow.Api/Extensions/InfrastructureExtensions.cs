@@ -1,5 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
-using ProjectFlow.Application.Projects;
+
+using ProjectFlow.Application.Projects.Ports;
 using ProjectFlow.Infrastructure.Projects;
 
 namespace ProjectFlow.Api.Extensions;

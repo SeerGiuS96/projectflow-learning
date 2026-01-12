@@ -1,5 +1,5 @@
 using FluentValidation;
-using ProjectFlow.Application.Projects;
+using ProjectFlow.Application.Projects.Ports;
 using ProjectFlow.Domain.Entities;
 
 namespace ProjectFlow.Application.Projects.CreateProject;
