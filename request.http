@@ -1,0 +1,48 @@
+###############################################################################
+# ProjectFlow - Manual API requests (VS Code)
+#
+# REQUIREMENTS
+# - VS Code extension: "REST Client" (by Huachao Mao)
+#
+# HOW TO USE
+# 1) Start the API (from repo root):
+#      dotnet run --project projectflow/ProjectFlow.Api
+#
+# 2) Confirm the listening URL in console output:
+#      "Now listening on: http://localhost:XXXX"  (or https://localhost:YYYY)
+#    If needed, update @baseUrl below.
+#
+# 3) In this file, run requests using:
+#    - Click "Send Request" above a request, OR
+#    - Ctrl+Shift+P -> "Rest Client: Send Request" (cursor inside the request)
+#
+# AUTH FLOW (manual token)
+# - Run "Login" request first.
+# - Copy the token from the JSON response.
+# - Paste it into @token below (NO quotes).
+# - Then run any authenticated request.
+###############################################################################
+
+@baseUrl = http://localhost:5286
+@token =
+
+###
+# Login (copy token from response into @token above)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "demo",
+  "password": "demo"
+}
+
+###
+# Verify token works (requires @token)
+GET {{baseUrl}}/me
+Authorization: Bearer {{token}}
+
+###
+# Projects: Get all (requires @token)
+GET {{baseUrl}}/projects
+Authorization: Bearer {{token}}
+

@@ -1,58 +1,77 @@
-﻿
+﻿# ProjectFlow — Roadmap real
 
 ## Project overview (mental model)
 
-This project is a **personal project & task manager** used as a vehicle to learn
-professional backend + frontend development.
-
-The goal is NOT the app itself, but:
-- domain modeling
-- clean architecture
-- testing
+ProjectFlow is a **personal project & task manager** used as a vehicle to learn:
+- Clean Architecture
+- Clean Code
 - API design
-- frontend integration
+- Testing
+- Angular integration
 
-The application is intentionally simple at first and will grow over time.
+The app itself is intentionally simple.
+The goal is engineering quality, not feature count.
 
+---
 
+## DONE
 
-## Domain scope (Day 1)
+### Day 1 — Solution & Domain baseline
+- .NET 8 solution structure
+- Clean Architecture layers created
+- Core domain modeled:
+  - Project
+  - WorkItem
+- Domain invariants enforced via constructors/methods
+- Private setters introduced
 
-We are modeling the **core domain only**, without:
-- database
-- API
-- authentication
-- frontend
+### Day 2 — Persistence
+- EF Core integrated
+- DbContext + mappings via IEntityTypeConfiguration
+- Migrations created
+- Provider switch to SQLite for dev
+- Persistence isolated in Infrastructure
 
-Domain concepts:
-- Project
-- WorkItem (task)
+### Day 3 — Authentication baseline
+- JWT minimal implementation
+- Token generation service
+- `/auth/login` endpoint
+- `/me` protected endpoint
+- Swagger configured with Authorize
 
-Rules live in the domain:
-- Project name cannot be empty
-- WorkItem title cannot be empty
-- WorkItem status is limited to Todo / Doing / Done
-- When a WorkItem is marked as Done, CompletedAt is set
+### Day 4 — First use case (Command)
+- CreateProject use case
+- Application command + handler
+- Domain factory (`Project.Create`)
+- Infrastructure repository write
+- Protected endpoint `POST /projects`
 
-Out of scope for now:
-- users
-- assignments
-- due dates
-- tags
-- comments
+### Day 5 — Second use case (Query) + tooling
+- GetProjects use case
+- Introduction of Application port: `IProjectRepository`
+- Infrastructure implementation using EF Core
+- Protected endpoint `GET /projects`
+- `requests.http` added for API testing (login + projects)
 
+---
 
+## NEXT
 
-# Roadmap (Week 1)
+### Day 6 — Testing baseline
+- Application unit tests (no EF, no API)
+- Test handlers with mocked repositories
+- Happy path + edge cases
+- Clarify what is tested at which layer
 
-- [x] Day 1: Backend foundation (.NET 8) — solution structure + domain baseline
-- [x] Day 2: Persistence — EF Core + migrations
-- [ ] Day 3: Auth — JWT + testing baseline
-- [ ] Day 4: Angular foundation — routing + services
-- [ ] Day 5: Forms + API integration
-- [ ] Day 6: Cleanup + interview prep (README, review, refactor)
-- [ ] Day 7 (buffer): polish + gaps + mock interview
+### Day 7 — API hardening
+- Consistent error handling (ProblemDetails)
+- Status codes (201 / 400 / 401 / 404 / 409)
+- Small refactors for naming & clarity
+- Minimal logging
 
-Notes:
-- Keep commits small and tied to milestones.
-- No filler code.
+---
+
+## LATER (Week 2+)
+- WorkItems use cases
+- Angular foundation
+- API + frontend integration
